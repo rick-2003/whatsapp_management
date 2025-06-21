@@ -5,12 +5,21 @@ import { supabase } from '../lib/supabase'
 import { APP_CONFIG } from '../config/app'
 import GroupCard from '../components/GroupCard'
 import LoadingSpinner from '../components/LoadingSpinner'
+import WhatsAppIcon from '../components/WhatsAppIcon'
 
 const Home = () => {
   const [groups, setGroups] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [randomAdmin, setRandomAdmin] = useState(null)
+
+  // Randomly select an admin on page load
+  useEffect(() => {
+    const admins = APP_CONFIG.admins
+    const randomIndex = Math.floor(Math.random() * admins.length)
+    setRandomAdmin(admins[randomIndex])
+  }, [])
 
   useEffect(() => {
     fetchGroups()
@@ -86,14 +95,14 @@ const Home = () => {
                 alt={APP_CONFIG.name} 
                 className="w-full h-full rounded-full object-cover"
               />
-            </div>
-            <h1 className="text-3xl font-light mb-2 tracking-wide">FUTURE MINDS</h1>
-            <p className="text-blue-100 text-sm font-light mb-6">Community Hub</p>
-              {/* Stats Cards - One UI Style */}
+            </div>            <h1 className="text-3xl font-light mb-2 tracking-wide">FUTURE MINDS</h1>
+            <p className="text-blue-100 text-sm font-light mb-6">Student Community Hub</p>
+            
+            {/* Stats Cards - One UI Style */}
             <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
               <div className="bg-white/10 backdrop-blur rounded-2xl p-3">
                 <div className="text-2xl font-light">{groups.length}</div>
-                <div className="text-xs text-blue-100 font-medium">Groups</div>
+                <div className="text-xs text-blue-100 font-medium">Study Groups</div>
               </div>
               <div className="bg-white/10 backdrop-blur rounded-2xl p-3">
                 <div className="text-2xl font-light">{groups.filter(g => g.is_active).length}</div>
@@ -101,7 +110,7 @@ const Home = () => {
               </div>
               <div className="bg-white/10 backdrop-blur rounded-2xl p-3">
                 <div className="text-2xl font-light">{new Set(groups.map(g => g.category)).size}</div>
-                <div className="text-xs text-blue-100 font-medium">Categories</div>
+                <div className="text-xs text-blue-100 font-medium">Subjects</div>
               </div>
             </div>
           </div>
@@ -114,18 +123,31 @@ const Home = () => {
               src={APP_CONFIG.logo} 
               alt={APP_CONFIG.name} 
               className="w-10 h-10 rounded-full object-cover"
-            />            <div className="text-left">
-              <p className="font-semibold text-gray-900 text-sm">{APP_CONFIG.admins[0].name}</p>
-              <p className="text-xs text-gray-600">{APP_CONFIG.admins[0].department}</p>
+            />
+            <div className="text-left">
+              {randomAdmin && (
+                <>
+                  <p className="font-semibold text-gray-900 text-sm">{randomAdmin.name}</p>
+                  <p className="text-xs text-gray-600">{randomAdmin.department}</p>
+                </>
+              )}
             </div>
           </div>
-          <button
-            onClick={() => window.location.href = '/admin-contact'}
-            className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-green-600 transition-colors flex items-center space-x-1"
-          >
-            <MessageCircle size={16} />
-            <span>Contact</span>
-          </button>
+          <div className="flex space-x-2">            <button
+              onClick={() => randomAdmin && window.open(randomAdmin.whatsappDeepLink, '_blank')}
+              className="bg-green-500 text-white px-3 py-2 rounded-full text-sm font-medium hover:bg-green-600 transition-colors flex items-center space-x-1"
+            >
+              <WhatsAppIcon className="w-4 h-4" />
+              <span>Chat</span>
+            </button>
+            <button
+              onClick={() => window.location.href = '/admin-contact'}
+              className="bg-blue-500 text-white px-3 py-2 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors flex items-center space-x-1"
+            >
+              <Users size={14} />
+              <span>All</span>
+            </button>
+          </div>
         </div>
       </div>
 

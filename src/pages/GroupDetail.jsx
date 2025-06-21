@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 import { APP_CONFIG } from '../config/app'
 import LoadingSpinner from '../components/LoadingSpinner'
+import WhatsAppIcon from '../components/WhatsAppIcon'
 
 const GroupDetail = () => {
   const { id } = useParams()
@@ -184,12 +185,11 @@ const GroupDetail = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-3">
-            <button
+          <div className="space-y-3">            <button
               onClick={handleJoinGroup}
               className="w-full bg-whatsapp text-white py-4 rounded-lg font-semibold hover:bg-whatsapp_dark transition-colors flex items-center justify-center space-x-2"
             >
-              <ExternalLink size={20} />
+              <WhatsAppIcon className="w-5 h-5" />
               <span>Join {group.group_type === 'channel' ? 'Channel' : 'Group'}</span>
             </button>
 

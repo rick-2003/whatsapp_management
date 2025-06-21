@@ -37,15 +37,19 @@ const AdminDashboard = ({ session }) => {
   const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 })
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+  const [realtimeStatus, setRealtimeStatus] = useState('connecting')
   const ITEMS_PER_PAGE = 10
   const navigate = useNavigate()
+  
   useEffect(() => {
     if (!session) {
       navigate('/login')
       return
     }
     fetchGroups()
-    fetchStats()    // Subscribe to real-time changes
+    fetchStats()    
+    
+    // Subscribe to real-time changes with improved error handling
     const subscription = supabase
       .channel('admin-groups-changes')
       .on('postgres_changes', 
@@ -53,16 +57,33 @@ const AdminDashboard = ({ session }) => {
           event: '*', 
           schema: 'public', 
           table: 'groups' 
-        },        (payload) => {
-          logger.log('🔄 Admin: Database change detected, invalidating cache...')
-          cachedDB.invalidateGroupsCache() // Invalidate cache on changes
+        },        
+        (payload) => {
+          logger.log('🔄 Admin: Database change detected:', payload.eventType, payload.new || payload.old)
+          
+          // Invalidate cache immediately
+          cachedDB.invalidateGroupsCache()
+          
+          // Update UI based on the change type
+          if (payload.eventType === 'INSERT') {
+            logger.log('📝 New group added, refreshing data...')
+          } else if (payload.eventType === 'UPDATE') {
+            logger.log('✏️ Group updated, refreshing data...')
+          } else if (payload.eventType === 'DELETE') {
+            logger.log('🗑️ Group deleted, refreshing data...')
+          }
+          
+          // Refresh data
           fetchGroups()
           fetchStats()
         }
-      )
-      .subscribe()
+      )      .subscribe((status) => {
+        logger.log('📡 Real-time subscription status:', status)
+        setRealtimeStatus(status)
+      })
 
     return () => {
+      logger.log('🔌 Unsubscribing from real-time updates')
       subscription.unsubscribe()
     }
   }, [session, navigate])
@@ -143,9 +164,10 @@ const AdminDashboard = ({ session }) => {
       fetchGroups(currentPage + 1)
     }
   }
-
   const fetchStats = async () => {
     try {
+      logger.log('📊 Fetching fresh stats (no cache)...')
+      
       const { data, error } = await supabase
         .from('groups')
         .select('is_active')
@@ -157,8 +179,9 @@ const AdminDashboard = ({ session }) => {
       const inactive = total - active
 
       setStats({ total, active, inactive })
+      logger.log(`📊 Stats updated: ${total} total, ${active} active, ${inactive} inactive`)
     } catch (error) {
-      logger.error('Error fetching stats:', error)
+      logger.error('❌ Error fetching stats:', error)
     }
   }
 
@@ -199,12 +222,15 @@ const AdminDashboard = ({ session }) => {
       alert('Error updating group status')
     }
   }
-
   const handleFormSuccess = async () => {
     setShowForm(false)
     setEditingGroup(null)
     
-    // Force a complete re-fetch
+    // Immediately invalidate cache and force refresh
+    logger.log('📝 Form submitted successfully, forcing immediate refresh...')
+    cachedDB.invalidateGroupsCache()
+    
+    // Force a complete re-fetch with loading state
     setLoading(true)
     await fetchGroups()
     await fetchStats()
@@ -239,16 +265,29 @@ const AdminDashboard = ({ session }) => {
 
       <div className="min-h-screen bg-gray-50">      {/* Header - One UI Style */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
-        <div className="px-6 py-6">
-          <div className="text-center mb-6">
+        <div className="px-6 py-6">          <div className="text-center mb-6">
             <h1 className="text-3xl font-light mb-2 tracking-wide">Admin Dashboard</h1>
             <p className="text-blue-100 text-sm font-light">Manage Community Hub Groups</p>
+            
+            {/* Real-time Status Indicator */}
+            <div className="mt-3 flex items-center justify-center space-x-2 text-xs">
+              <div className={`w-2 h-2 rounded-full ${
+                realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400' : 
+                realtimeStatus === 'CHANNEL_ERROR' ? 'bg-red-400' : 
+                'bg-yellow-400'
+              }`}></div>
+              <span className="text-blue-100 opacity-75">
+                Real-time: {realtimeStatus === 'SUBSCRIBED' ? 'Connected' : 
+                          realtimeStatus === 'CHANNEL_ERROR' ? 'Error' : 'Connecting...'}
+              </span>
+            </div>
           </div>
           
           {/* Action Buttons - Horizontal Layout */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">            <button
               onClick={() => {
+                logger.log('🔄 Manual refresh triggered')
+                cachedDB.invalidateGroupsCache()
                 setLoading(true)
                 fetchGroups()
                 fetchStats()

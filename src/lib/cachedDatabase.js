@@ -195,12 +195,15 @@ class CachedDatabaseService {
     
     return true
   }
-
   /**
    * Invalidate all groups-related cache entries
    */
   invalidateGroupsCache() {
+    logger.log('🧹 Invalidating all groups cache entries...')
+    const beforeCount = smartCache.cache.size
     smartCache.invalidatePattern('groups:')
+    const afterCount = smartCache.cache.size
+    logger.log(`✅ Cache invalidated: ${beforeCount - afterCount} entries removed`)
   }
   /**
    * Manual cache refresh for groups

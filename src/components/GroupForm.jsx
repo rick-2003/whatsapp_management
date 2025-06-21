@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, Save, Link as LinkIcon, Image, Users, MessageCircle } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import cachedDB from '../lib/cachedDatabase'
 
 const GroupForm = ({ group, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -27,7 +27,6 @@ const GroupForm = ({ group, onSuccess, onCancel }) => {
     { value: 'civil', label: 'Civil Engineering' },
     { value: 'other', label: 'Other Departments' }
   ]
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -39,21 +38,11 @@ const GroupForm = ({ group, onSuccess, onCancel }) => {
       }
 
       if (group) {
-        // Update existing group
-        const { error } = await supabase
-          .from('groups')
-          .update(formData)
-          .eq('id', group.id)
-
-        if (error) throw error
+        // Update existing group using cached database service
+        await cachedDB.updateGroup(group.id, formData)
       } else {
-        // Create new group
-        const { data, error } = await supabase
-          .from('groups')
-          .insert([formData])
-          .select()
-
-        if (error) throw error
+        // Create new group using cached database service
+        await cachedDB.createGroup(formData)
       }
 
       onSuccess()

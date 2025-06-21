@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ExternalLink, Users, MessageCircle, Calendar, Share2, Copy } from 'lucide-react'
+import { ArrowLeft, ExternalLink, MessageCircle, Calendar, Share2, Copy } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 import { APP_CONFIG } from '../config/app'
@@ -110,23 +110,20 @@ const GroupDetail = () => {
         <meta property="og:image" content={`${APP_CONFIG.baseUrl}${APP_CONFIG.logo}`} />
       </Helmet>
 
-      <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="px-4 py-3 flex items-center space-x-3">
+      <div className="min-h-screen bg-gray-50">      {/* Header */}
+      <div className="bg-white shadow-sm border-b border-gray-200">
+        <div className="px-4 py-4 flex items-center space-x-3">
           <button
             onClick={() => navigate('/')}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-lg font-semibold">Group Details</h1>
+          <h1 className="text-lg font-bold">Group Details</h1>
         </div>
-      </div>
-
-      {/* Group Image */}
+      </div>      {/* Group Image */}
       {group.image_url && (
-        <div className="relative h-48 bg-gray-200">
+        <div className="relative h-52 bg-gradient-to-br from-blue-500 to-purple-600">
           <img 
             src={group.image_url} 
             alt={group.name}
@@ -135,37 +132,35 @@ const GroupDetail = () => {
               e.target.style.display = 'none'
             }}
           />
-          <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+          <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+          {/* Group Type Badge */}
+          <div className="absolute bottom-4 right-4">
+            <div className="bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm font-medium border border-white/30">
+              {group.group_type === 'channel' ? '📢 Channel' : '👥 Group'}
+            </div>
+          </div>
         </div>
-      )}
-
-      {/* Group Info */}
+      )}      {/* Group Info */}
       <div className="p-4">
-        <div className="bg-white rounded-lg shadow-sm p-6 -mt-8 relative z-10">
+        <div className="bg-white rounded-2xl shadow-lg p-6 -mt-8 relative z-10 border border-gray-100">
           {/* Category and Verification */}
           <div className="flex items-center justify-between mb-4">
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(group.category)}`}>
+            <span className={`px-4 py-2 rounded-full text-sm font-bold ${getCategoryColor(group.category)}`}>
               {group.category.charAt(0).toUpperCase() + group.category.slice(1)}
             </span>
             {group.is_verified && (
-              <div className="flex items-center space-x-1 text-blue-600">
-                <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs">✓</span>
+              <div className="flex items-center space-x-2 text-green-600">
+                <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">✓</span>
                 </div>
-                <span className="text-sm font-medium">Verified</span>
+                <span className="text-sm font-bold">Verified</span>
               </div>
             )}
           </div>
 
           {/* Group Name */}
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{group.name}</h1>
-
-          {/* Stats */}
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{group.name}</h1>          {/* Stats */}
           <div className="flex items-center space-x-6 mb-4 text-gray-600">
-            <div className="flex items-center space-x-2">
-              <Users size={16} />
-              <span className="text-sm">{group.member_count || 0} members</span>
-            </div>
             <div className="flex items-center space-x-2">
               <MessageCircle size={16} />
               <span className="text-sm">{group.group_type === 'channel' ? 'Channel' : 'Group'}</span>
@@ -182,12 +177,11 @@ const GroupDetail = () => {
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-2">About</h2>
             <p className="text-gray-700 leading-relaxed">{group.description}</p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="space-y-3">            <button
+          </div>          {/* Action Buttons */}
+          <div className="space-y-3">
+            <button
               onClick={handleJoinGroup}
-              className="w-full bg-whatsapp text-white py-4 rounded-lg font-semibold hover:bg-whatsapp_dark transition-colors flex items-center justify-center space-x-2"
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl hover:scale-[1.02]"
             >
               <WhatsAppIcon className="w-5 h-5" />
               <span>Join {group.group_type === 'channel' ? 'Channel' : 'Group'}</span>
@@ -195,7 +189,7 @@ const GroupDetail = () => {
 
             <button
               onClick={handleShare}
-              className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2"
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200 flex items-center justify-center space-x-2 hover:scale-[1.02]"
             >
               {copied ? (
                 <>

@@ -3,9 +3,27 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ExternalLink, MessageCircle, Calendar, Share2, Copy } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
+import cachedDB from '../lib/cachedDatabase'
 import { APP_CONFIG } from '../config/app'
 import LoadingSpinner from '../components/LoadingSpinner'
 import WhatsAppIcon from '../components/WhatsAppIcon'
+
+// Check if running in production
+const isProduction = process.env.NODE_ENV === 'production'
+
+// Logger utility that respects production environment
+const logger = {
+  log: (...args) => {
+    if (!isProduction) {
+      console.log(...args)
+    }
+  },
+  error: (...args) => {
+    if (!isProduction) {
+      console.error(...args)
+    }
+  }
+}
 
 const GroupDetail = () => {
   const { id } = useParams()
@@ -21,16 +39,21 @@ const GroupDetail = () => {
 
   const fetchGroup = async () => {
     try {
-      const { data, error } = await supabase
-        .from('groups')
-        .select('*')
-        .eq('id', id)
-        .eq('is_active', true)
-        .single()
-
-      if (error) throw error
+      setLoading(true)
+      logger.log(`🔍 Fetching group ${id} with smart cache...`)
+      
+      // Use cached database service instead of direct Supabase call
+      const data = await cachedDB.getGroupById(id)
+      
+      // Check if group is active
+      if (data.is_active === false) {
+        throw new Error('Group is not active')
+      }
+      
       setGroup(data)
+      logger.log(`✅ Loaded group: ${data.name}`)
     } catch (error) {
+      logger.error('❌ Error fetching group:', error)
       setError('Group not found or is not active')
     } finally {
       setLoading(false)
@@ -52,7 +75,7 @@ const GroupDetail = () => {
           url: shareUrl,
         })
       } catch (error) {
-        console.log('Error sharing:', error)
+        logger.error('Error sharing:', error)
       }
     } else {
       // Fallback: copy to clipboard
@@ -61,7 +84,7 @@ const GroupDetail = () => {
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
       } catch (error) {
-        console.log('Error copying to clipboard:', error)
+        logger.error('Error copying to clipboard:', error)
       }
     }
   }

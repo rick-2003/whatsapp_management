@@ -2,10 +2,27 @@ import { useState, useEffect } from 'react'
 import { Search, Users, ExternalLink, MessageCircle } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
+import cachedDB from '../lib/cachedDatabase'
 import { APP_CONFIG } from '../config/app'
 import GroupCard from '../components/GroupCard'
 import LoadingSpinner from '../components/LoadingSpinner'
 import WhatsAppIcon from '../components/WhatsAppIcon'
+
+// Check if running in production
+const isProduction = process.env.NODE_ENV === 'production'
+
+// Logger utility that respects production environment
+const logger = {
+  log: (...args) => {
+    if (!isProduction) {
+      console.log(...args)
+    }
+  },
+  error: (...args) => {
+    if (!isProduction) {
+      console.error(...args)
+    }  }
+}
 
 const Home = () => {
   const [groups, setGroups] = useState([])
@@ -22,9 +39,7 @@ const Home = () => {
   }, [])
 
   useEffect(() => {
-    fetchGroups()
-
-    // Subscribe to real-time changes
+    fetchGroups()    // Subscribe to real-time changes
     const subscription = supabase
       .channel('groups-changes')
       .on('postgres_changes', 
@@ -32,8 +47,9 @@ const Home = () => {
           event: '*', 
           schema: 'public', 
           table: 'groups' 
-        }, 
-        (payload) => {
+        },        (payload) => {
+          logger.log('🔄 Database change detected, invalidating cache...')
+          cachedDB.invalidateGroupsCache() // Invalidate cache on changes
           fetchGroups() // Refetch data when changes occur
         }
       )
@@ -46,16 +62,20 @@ const Home = () => {
 
   const fetchGroups = async () => {
     try {
-      const { data, error } = await supabase
-        .from('groups')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setGroups(data || [])
+      setLoading(true)
+      logger.log('🔍 Fetching groups with smart cache...')
+      
+      // Use cached database service instead of direct Supabase call
+      const data = await cachedDB.getAllGroups()
+      
+      // Filter for active groups only
+      const activeGroups = data.filter(group => group.is_active !== false)
+      setGroups(activeGroups || [])
+      
+      logger.log(`✅ Loaded ${activeGroups.length} groups`)
     } catch (error) {
-      console.error('Error fetching groups:', error)
+      logger.error('❌ Error fetching groups:', error)
+      setGroups([])
     } finally {
       setLoading(false)
     }
@@ -201,9 +221,7 @@ const Home = () => {
             {filteredGroups.map(group => (
               <GroupCard key={group.id} group={group} />
             ))}
-          </div>
-        )}
-      </div>
+          </div>        )}      </div>
     </div>
     </>
   )

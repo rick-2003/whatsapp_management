@@ -3,9 +3,27 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, Edit, Trash2, Eye, EyeOff, BarChart3, RefreshCw } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
+import cachedDB from '../lib/cachedDatabase'
 import { APP_CONFIG } from '../config/app'
 import LoadingSpinner from '../components/LoadingSpinner'
 import GroupForm from '../components/GroupForm'
+
+// Check if running in production
+const isProduction = process.env.NODE_ENV === 'production'
+
+// Logger utility that respects production environment
+const logger = {
+  log: (...args) => {
+    if (!isProduction) {
+      console.log(...args)
+    }
+  },
+  error: (...args) => {
+    if (!isProduction) {
+      console.error(...args)
+    }
+  }
+}
 
 const AdminDashboard = ({ session }) => {
   const [groups, setGroups] = useState([])
@@ -28,8 +46,9 @@ const AdminDashboard = ({ session }) => {
           event: '*', 
           schema: 'public', 
           table: 'groups' 
-        }, 
-        (payload) => {
+        },        (payload) => {
+          logger.log('🔄 Admin: Database change detected, invalidating cache...')
+          cachedDB.invalidateGroupsCache() // Invalidate cache on changes
           fetchGroups()
           fetchStats()
         }
@@ -72,7 +91,7 @@ const AdminDashboard = ({ session }) => {
 
       setStats({ total, active, inactive })
     } catch (error) {
-      console.error('Error fetching stats:', error)
+      logger.error('Error fetching stats:', error)
     }
   }
 
@@ -80,35 +99,36 @@ const AdminDashboard = ({ session }) => {
     if (!confirm('Are you sure you want to delete this group?')) return
 
     try {
-      const { error } = await supabase
-        .from('groups')
-        .delete()
-        .eq('id', id)
-
-      if (error) throw error
+      logger.log(`🗑️ Deleting group ${id} and invalidating cache...`)
+      
+      // Use cached database service for deletion
+      await cachedDB.deleteGroup(id)
       
       setGroups(groups.filter(g => g.id !== id))
       fetchStats()
+      
+      logger.log('✅ Group deleted successfully')
     } catch (error) {
-      console.error('Error deleting group:', error)
+      logger.error('❌ Error deleting group:', error)
       alert('Error deleting group')
     }
   }
 
   const handleToggleActive = async (id, currentStatus) => {
     try {
-      const { error } = await supabase
-        .from('groups')
-        .update({ is_active: !currentStatus })
-        .eq('id', id)
-
-      if (error) throw error
-        setGroups(groups.map(g => 
+      logger.log(`🔄 Toggling group ${id} status and invalidating cache...`)
+      
+      // Use cached database service for update
+      await cachedDB.updateGroup(id, { is_active: !currentStatus })
+      
+      setGroups(groups.map(g => 
         g.id === id ? { ...g, is_active: !currentStatus } : g
       ))
       fetchStats()
+      
+      logger.log('✅ Group status updated successfully')
     } catch (error) {
-      console.error('Error updating group status:', error)
+      logger.error('❌ Error updating group status:', error)
       alert('Error updating group status')
     }
   }
@@ -144,8 +164,7 @@ const AdminDashboard = ({ session }) => {
           <div className="flex items-center justify-between">            <div>
               <h1 className="text-3xl font-light mb-2 tracking-wide">Admin Dashboard</h1>
               <p className="text-blue-100 text-sm font-light">Manage Community Hub Groups</p>
-            </div>
-            <div className="flex space-x-3">
+            </div>            <div className="flex space-x-3">
               <button
                 onClick={() => {
                   setLoading(true)
@@ -266,11 +285,11 @@ const AdminDashboard = ({ session }) => {
       {/* Group Form Modal */}
       {showForm && (
         <GroupForm
-          group={editingGroup}
-          onSuccess={handleFormSuccess}
+          group={editingGroup}          onSuccess={handleFormSuccess}
           onCancel={() => {
             setShowForm(false)
-            setEditingGroup(null)          }}
+            setEditingGroup(null)
+          }}
         />
       )}
     </div>

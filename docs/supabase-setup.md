@@ -17,7 +17,7 @@ CREATE TABLE groups (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
-  category VARCHAR(50) NOT NULL CHECK (category IN ('education', 'technology', 'business', 'entertainment', 'health', 'sports', 'other')),
+  category VARCHAR(50) NOT NULL,
   group_type VARCHAR(20) DEFAULT 'group' CHECK (group_type IN ('group', 'channel')),
   join_link TEXT NOT NULL,
   image_url TEXT,
@@ -76,11 +76,11 @@ CREATE POLICY "Authenticated users can do everything" ON groups
 ```sql
 -- Insert some sample groups
 INSERT INTO groups (name, description, category, group_type, join_link, member_count, is_verified) VALUES
-('Future Minds Tech Hub', 'A community for technology enthusiasts, developers, and innovators. Share knowledge, discuss latest trends, and collaborate on projects.', 'technology', 'group', 'https://chat.whatsapp.com/sample1', 250, true),
-('Study Together', 'Join students from around the world for group study sessions, resource sharing, and academic support.', 'education', 'group', 'https://chat.whatsapp.com/sample2', 180, true),
-('Business Network', 'Connect with entrepreneurs, business owners, and professionals. Share opportunities and grow your network.', 'business', 'group', 'https://chat.whatsapp.com/sample3', 320, false),
-('Health & Wellness', 'Tips, advice, and support for maintaining a healthy lifestyle. Share recipes, workouts, and motivation.', 'health', 'group', 'https://chat.whatsapp.com/sample4', 95, false),
-('Entertainment Central', 'Discuss movies, music, books, games, and all things entertainment. Share recommendations and reviews.', 'entertainment', 'group', 'https://chat.whatsapp.com/sample5', 420, true);
+('Future Minds CSE Hub', 'A community for Computer Science students and professionals. Share knowledge, discuss algorithms, and collaborate on coding projects.', 'cse', 'group', 'https://chat.whatsapp.com/sample1', 250, true),
+('IT Study Group', 'Join Information Technology students for group study sessions, resource sharing, and technical discussions.', 'it', 'group', 'https://chat.whatsapp.com/sample2', 180, true),
+('ECE Network', 'Connect with Electronics & Communication students and professionals. Discuss circuits, signals, and latest tech trends.', 'ece', 'group', 'https://chat.whatsapp.com/sample3', 320, false),
+('Mechanical Engineering', 'Tips, advice, and discussions for Mechanical Engineering students. Share projects and career guidance.', 'mechanical', 'group', 'https://chat.whatsapp.com/sample4', 95, false),
+('Common Groups', 'General discussion group for all departments. Share experiences, events, and campus updates.', 'common', 'group', 'https://chat.whatsapp.com/sample5', 420, true);
 ```
 
 ## 6. Environment Variables
@@ -91,6 +91,20 @@ Add these to your `.env` file:
 VITE_SUPABASE_URL=your-project-url
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
+
+## 7. Category Field Update
+
+**Note**: The category field no longer has check constraints, allowing for flexible department categorization including:
+- `common` - Common/General groups
+- `cse` - Computer Science & Engineering
+- `it` - Information Technology
+- `ece` - Electronics & Communication Engineering
+- `eee` - Electrical & Electronics Engineering
+- `mechanical` - Mechanical Engineering
+- `civil` - Civil Engineering
+- `other` - Other departments
+
+If you need to remove an existing category constraint, run the `remove-category-constraint.sql` script in your Supabase SQL Editor.
 
 ## Security Notes
 

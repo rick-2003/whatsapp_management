@@ -8,9 +8,8 @@ export const APP_CONFIG = {  // App Information
   // SEO & Meta
   keywords: "student community, educational groups, study groups, academic help, peer learning, student networking",
   author: "Future Minds Student Community",
-  
-  // URLs
-  baseUrl: import.meta.env.VITE_APP_URL || "http://localhost:5173",
+    // URLs
+  baseUrl: import.meta.env.VITE_APP_URL || "https://mind-community.netlify.app",
   // Admin Contact Information
   admins: [
     {
@@ -47,18 +46,17 @@ export const APP_CONFIG = {  // App Information
     background: "#f8fafc",
     surface: "#ffffff"
   },
-  
-  // Contact & Support
+    // Contact & Support
   support: {
     email: "support@futureminds.com",
-    website: "https://futureminds.com"
+    website: "https://mind-community.netlify.app"
   }
 };
 
 // Social Media Links
 export const SOCIAL_LINKS = {
   whatsapp: "https://wa.me/1234567890",
-  website: "https://futureminds.com",
+  website: "https://mind-community.netlify.app",
   email: "mailto:contact@futureminds.com"
 };
 

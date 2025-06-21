@@ -6,21 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:netlify": "vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
+    "preview": "vite preview",
+    "deploy": "npm run build:netlify"
+  },  "dependencies": {
     "@supabase/supabase-js": "^2.50.0",
     "lucide-react": "^0.522.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-helmet-async": "^2.0.5",
-    "react-router-dom": "^7.6.2"
-  },
-  "devDependencies": {
+    "react-router-dom": "^6.8.1"
+  },  "devDependencies": {
     "@eslint/js": "^9.25.0",
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
+    "@types/react": "^18.2.6",
+    "@types/react-dom": "^18.2.4",
     "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.25.0",

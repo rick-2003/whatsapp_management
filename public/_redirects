@@ -1,0 +1,9 @@
+# Netlify redirects file for SPA routing
+# This handles client-side routing for React Router
+
+# Redirect all routes to index.html for SPA
+/*    /index.html   200
+
+
+# Force HTTPS redirects
+http://mind-community.netlify.app/*    https://mind-community.netlify.app/:splat    301!

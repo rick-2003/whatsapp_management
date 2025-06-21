@@ -247,9 +247,8 @@ const Home = () => {
             <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
               <Users className="text-gray-400" size={32} />
             </div>
-            <h3 className="text-xl font-light text-gray-900 mb-2">No groups found</h3>
-            <p className="text-gray-500 text-sm">
-              {searchTerm || selectedCategory !== 'all' 
+            <h3 className="text-xl font-light text-gray-900 mb-2">No groups found</h3>            <p className="text-gray-500 text-sm">
+              {searchTerm || selectedCategory !== 'common' 
                 ? 'Try adjusting your search or filter criteria' 
                 : 'No groups available at the moment'}
             </p>

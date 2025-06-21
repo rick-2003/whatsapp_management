@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ExternalLink, Users, MessageCircle, Calendar, Share2, Copy } from 'lucide-react'
+import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
+import { APP_CONFIG } from '../config/app'
 import LoadingSpinner from '../components/LoadingSpinner'
 
 const GroupDetail = () => {
@@ -96,9 +98,18 @@ const GroupDetail = () => {
       </div>
     )
   }
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <Helmet>
+        <title>{group?.name} - {APP_CONFIG.name}</title>
+        <meta name="description" content={group?.description || `Join ${group?.name} community group`} />
+        <meta name="keywords" content={`${group?.category}, ${group?.name}, community group, ${APP_CONFIG.keywords}`} />
+        <meta property="og:title" content={`${group?.name} - ${APP_CONFIG.name}`} />
+        <meta property="og:description" content={group?.description} />
+        <meta property="og:image" content={`${APP_CONFIG.baseUrl}${APP_CONFIG.logo}`} />
+      </Helmet>
+
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="px-4 py-3 flex items-center space-x-3">
@@ -205,14 +216,14 @@ const GroupDetail = () => {
             <h3 className="font-semibold text-gray-900 mb-2">Group Guidelines</h3>
             <ul className="text-sm text-gray-600 space-y-1">
               <li>• Be respectful and courteous to all members</li>
-              <li>• Stay on topic and avoid spam</li>
-              <li>• No inappropriate content or behavior</li>
+              <li>• Stay on topic and avoid spam</li>              <li>• No inappropriate content or behavior</li>
               <li>• Follow the group admin's instructions</li>
             </ul>
           </div>
         </div>
       </div>
     </div>
+    </>
   )
 }
 

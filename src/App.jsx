@@ -1,11 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { HelmetProvider } from 'react-helmet-async'
 import { supabase } from './lib/supabase'
 import Header from './components/Header'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import AdminDashboard from './pages/AdminDashboard'
 import GroupDetail from './pages/GroupDetail'
+import AdminContact from './pages/AdminContact'
 import './App.css'
 
 function App() {
@@ -38,21 +40,23 @@ function App() {
       </div>
     )
   }
-
   return (
-    <Router>
-      <div className="app-container">
-        <Header session={session} />
-        <main className="pb-20">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/admin" element={<AdminDashboard session={session} />} />
-            <Route path="/group/:id" element={<GroupDetail />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <HelmetProvider>
+      <Router>
+        <div className="app-container">
+          <Header session={session} />
+          <main className="pb-20">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/admin" element={<AdminDashboard session={session} />} />
+              <Route path="/group/:id" element={<GroupDetail />} />
+              <Route path="/admin-contact" element={<AdminContact />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </HelmetProvider>
   )
 }
 

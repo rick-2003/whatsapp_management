@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Edit, Trash2, Eye, EyeOff, BarChart3, RefreshCw } from 'lucide-react'
+import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
+import { APP_CONFIG } from '../config/app'
 import LoadingSpinner from '../components/LoadingSpinner'
 import GroupForm from '../components/GroupForm'
 
@@ -127,16 +129,21 @@ const AdminDashboard = ({ session }) => {
 
   if (loading) {
     return <LoadingSpinner />
-  }
-  return (
-    <div className="min-h-screen bg-gray-50">
+  }  return (
+    <>
+      <Helmet>
+        <title>Admin Dashboard - {APP_CONFIG.name}</title>
+        <meta name="description" content="Administrative dashboard for managing community groups" />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+
+      <div className="min-h-screen bg-gray-50">
       {/* Header - One UI Style */}
       <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
         <div className="px-6 py-8">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between">            <div>
               <h1 className="text-3xl font-light mb-2 tracking-wide">Admin Dashboard</h1>
-              <p className="text-blue-100 text-sm font-light">Manage groups and channels</p>
+              <p className="text-blue-100 text-sm font-light">Manage Community Hub Groups</p>
             </div>
             <div className="flex space-x-3">
               <button
@@ -263,11 +270,11 @@ const AdminDashboard = ({ session }) => {
           onSuccess={handleFormSuccess}
           onCancel={() => {
             setShowForm(false)
-            setEditingGroup(null)
-          }}
+            setEditingGroup(null)          }}
         />
       )}
     </div>
+    </>
   )
 }
 

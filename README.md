@@ -1,33 +1,37 @@
-# FUTURE MINDS: Groups/Channel Management System
+# FUTURE MINDS: Community Hub
 
-A mobile-first WhatsApp group management system built with React, Vite, Tailwind CSS, and Supabase. This application allows users to browse and join WhatsApp groups and channels, with an admin panel for managing group listings.
+A mobile-first community group management system built with React, Vite, Tailwind CSS, and Supabase. This application allows users to browse and join community groups, with an admin panel for managing group listings and dedicated admin contact functionality.
 
 ## 🚀 Features
 
 ### Public Features
 - **Mobile-First Design**: Native mobile app-like experience
-- **Group Discovery**: Browse available WhatsApp groups and channels
+- **Community Discovery**: Browse available community groups and channels
 - **Smart Search**: Search groups by name or description
 - **Category Filtering**: Filter groups by categories (Education, Technology, Business, etc.)
 - **Group Details**: View detailed information about each group
 - **Direct Join**: One-click join functionality with WhatsApp links
 - **Share Groups**: Share group links with others
+- **Admin Contact**: Dedicated admin contact page with bio and WhatsApp integration
+- **SEO Optimized**: React Helmet for better search engine visibility
 
 ### Admin Features
 - **Secure Authentication**: Admin login with Supabase Auth
 - **Group Management**: Add, edit, delete, and toggle group visibility
 - **Dashboard Analytics**: View statistics about groups and categories
-- **Group Verification**: Mark groups as verified
+- **Admin Profile**: Centralized admin contact information
 - **Media Support**: Add group images and logos
 - **Member Count Tracking**: Keep track of member counts
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 18 with Vite
+- **Frontend**: React 19 with Vite
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide React
 - **Backend**: Supabase (Database + Authentication)
 - **Routing**: React Router DOM
+- **SEO**: React Helmet Async
+- **Configuration**: Centralized app config
 - **Deployment**: Ready for Vercel, Netlify, or similar platforms
 
 ## 🏗️ Database Schema

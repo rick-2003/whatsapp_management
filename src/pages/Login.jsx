@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Lock, Mail, Eye, EyeOff, Shield } from 'lucide-react'
+import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
+import { APP_CONFIG } from '../config/app'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -33,17 +35,26 @@ const Login = () => {
       setLoading(false)
     }
   }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-whatsapp_dark to-whatsapp flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        {/* Header */}
+    <>
+      <Helmet>
+        <title>Admin Login - {APP_CONFIG.name}</title>
+        <meta name="description" content="Administrator login for community hub management" />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+
+      <div className="min-h-screen bg-gradient-to-br from-primary via-whatsapp_dark to-whatsapp flex items-center justify-center px-4">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">        {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-whatsapp to-whatsapp_dark rounded-full flex items-center justify-center mx-auto mb-4">
-            <Shield className="text-white" size={32} />
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg p-2">
+            <img 
+              src={APP_CONFIG.logo} 
+              alt={APP_CONFIG.name} 
+              className="w-full h-full rounded-full object-cover"
+            />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Login</h1>
-          <p className="text-gray-600 mt-2">Sign in to manage groups</p>
+          <p className="text-gray-600 mt-2">Sign in to manage community groups</p>
         </div>
 
         {/* Error Message */}
@@ -112,9 +123,7 @@ const Login = () => {
               'Sign In'
             )}
           </button>
-        </form>
-
-        {/* Footer */}
+        </form>        {/* Footer */}
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-600">
             Only authorized administrators can access the management panel
@@ -122,6 +131,7 @@ const Login = () => {
         </div>
       </div>
     </div>
+    </>
   )
 }
 

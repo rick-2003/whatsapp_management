@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, User, LogOut, Home, Shield } from 'lucide-react'
+import { Menu, X, User, LogOut, Home, Shield, MessageCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { APP_CONFIG } from '../config/app'
 
 const Header = ({ session }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -21,15 +22,16 @@ const Header = ({ session }) => {
   return (
     <header className="bg-primary text-white sticky top-0 z-50 shadow-lg">
       <div className="px-4 py-3">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
+        <div className="flex items-center justify-between">          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-whatsapp rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">FM</span>
-            </div>
+            <img 
+              src={APP_CONFIG.logo} 
+              alt={APP_CONFIG.name} 
+              className="w-8 h-8 rounded-full"
+            />
             <div>
               <h1 className="text-lg font-bold leading-tight">FUTURE MINDS</h1>
-              <p className="text-xs text-gray-300">Groups Management</p>
+              <p className="text-xs text-gray-300">Community Hub</p>
             </div>
           </Link>
 
@@ -45,8 +47,7 @@ const Header = ({ session }) => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="mt-4 pb-4 border-t border-primary/20">
-            <nav className="space-y-2 mt-4">
-              <Link
+            <nav className="space-y-2 mt-4">              <Link
                 to="/"
                 onClick={() => setIsMenuOpen(false)}
                 className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
@@ -57,6 +58,19 @@ const Header = ({ session }) => {
               >
                 <Home size={20} />
                 <span>Home</span>
+              </Link>
+
+              <Link
+                to="/admin-contact"
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === '/admin-contact' 
+                    ? 'bg-whatsapp text-white' 
+                    : 'hover:bg-primary/80'
+                }`}
+              >
+                <MessageCircle size={20} />
+                <span>Admin Contact</span>
               </Link>
 
               {session ? (

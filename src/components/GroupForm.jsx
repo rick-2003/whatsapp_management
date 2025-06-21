@@ -2,19 +2,23 @@ import { useState } from 'react'
 import { X, Save, Link as LinkIcon, Image, Users, MessageCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
-const GroupForm = ({ group, onSuccess, onCancel }) => {  const [formData, setFormData] = useState({
+const GroupForm = ({ group, onSuccess, onCancel }) => {
+  const [formData, setFormData] = useState({
     name: group?.name || '',
     description: group?.description || '',
-    category: group?.category || 'other',
+    category: group?.category || 'common',
     group_type: group?.group_type || 'group',
     join_link: group?.join_link || '',
     image_url: group?.image_url || '',
     is_verified: group?.is_verified || false,
     is_active: group?.is_active ?? true
   })
+  
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  
   const categories = [
+    { value: 'common', label: 'Common' },
     { value: 'cse', label: 'Computer Science & Engineering' },
     { value: 'it', label: 'Information Technology' },
     { value: 'ece', label: 'Electronics & Communication' },

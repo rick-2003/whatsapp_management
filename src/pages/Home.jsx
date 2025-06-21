@@ -27,9 +27,13 @@ const logger = {
 const Home = () => {
   const [groups, setGroups] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [selectedCategory, setSelectedCategory] = useState('common')
   const [randomAdmin, setRandomAdmin] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const ITEMS_PER_PAGE = 10
 
   // Randomly select an admin on page load
   useEffect(() => {
@@ -59,25 +63,58 @@ const Home = () => {
       subscription.unsubscribe()
     }
   }, [])
-
-  const fetchGroups = async () => {
+  const fetchGroups = async (page = 1, reset = false) => {
     try {
-      setLoading(true)
-      logger.log('🔍 Fetching groups with smart cache...')
+      if (page === 1) {
+        setLoading(true)
+      } else {
+        setLoadingMore(true)
+      }
+      
+      logger.log(`🔍 Fetching groups page ${page} with smart cache...`)
       
       // Use cached database service instead of direct Supabase call
       const data = await cachedDB.getAllGroups()
       
+      if (!data) {
+        setGroups([])
+        setHasMore(false)
+        return
+      }
+      
       // Filter for active groups only
       const activeGroups = data.filter(group => group.is_active !== false)
-      setGroups(activeGroups || [])
       
-      logger.log(`✅ Loaded ${activeGroups.length} groups`)
+      // Calculate pagination
+      const startIndex = (page - 1) * ITEMS_PER_PAGE
+      const endIndex = startIndex + ITEMS_PER_PAGE
+      const paginatedData = activeGroups.slice(0, endIndex) // Get all items up to current page
+      
+      if (reset || page === 1) {
+        setGroups(paginatedData)
+      } else {
+        // This shouldn't happen with our slice approach, but keeping for safety
+        setGroups(paginatedData)
+      }
+      
+      // Check if there are more items
+      setHasMore(endIndex < activeGroups.length)
+      setCurrentPage(page)
+      
+      logger.log(`✅ Loaded page ${page}, showing ${paginatedData.length} of ${activeGroups.length} total groups`)
     } catch (error) {
       logger.error('❌ Error fetching groups:', error)
       setGroups([])
+      setHasMore(false)
     } finally {
       setLoading(false)
+      setLoadingMore(false)
+    }
+  }
+
+  const loadMoreGroups = () => {
+    if (!loadingMore && hasMore) {
+      fetchGroups(currentPage + 1)
     }
   }
 
@@ -88,7 +125,7 @@ const Home = () => {
     return matchesSearch && matchesCategory
   })
 
-  const categories = ['all', 'cse', 'it', 'ece', 'eee', 'mechanical', 'civil', 'other']
+  const categories = ['all', 'common', 'cse', 'it', 'ece', 'eee', 'mechanical', 'civil', 'other']
 
   if (loading) {
     return <LoadingSpinner />
@@ -197,7 +234,7 @@ const Home = () => {
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              {category === 'all' ? 'All Departments' : category.toUpperCase()}
+              {category === 'all' ? 'All' : category === 'common' ? 'Common' : category.toUpperCase()}
             </button>
           ))}
         </div>
@@ -221,7 +258,27 @@ const Home = () => {
             {filteredGroups.map(group => (
               <GroupCard key={group.id} group={group} />
             ))}
-          </div>        )}      </div>
+            
+            {/* Load More Indicator */}
+            {loadingMore && (
+              <div className="flex justify-center items-center py-8">
+                <div className="flex items-center space-x-2 text-gray-500">
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-green-500 rounded-full animate-spin"></div>
+                  <span className="text-sm">Loading more groups...</span>
+                </div>
+              </div>
+            )}
+            
+            {/* End of Results Indicator */}
+            {!hasMore && filteredGroups.length > 0 && (
+              <div className="flex justify-center items-center py-8">
+                <div className="text-gray-500 text-sm">
+                  You've reached the end of the list
+                </div>
+              </div>
+            )}
+          </div>
+        )}</div>
     </div>
     </>
   )

@@ -7,9 +7,9 @@ const GroupCard = ({ group }) => {
     e.stopPropagation()
     window.open(group.join_link, '_blank', 'noopener,noreferrer')
   }
-
   const getCategoryColor = (category) => {
     const colors = {
+      common: 'bg-indigo-100 text-indigo-800',
       cse: 'bg-blue-100 text-blue-800',
       it: 'bg-purple-100 text-purple-800', 
       ece: 'bg-green-100 text-green-800',

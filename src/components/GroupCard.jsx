@@ -1,4 +1,4 @@
-import { MessageCircle, Eye } from 'lucide-react'
+import { MessageCircle, Eye, Share2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import WhatsAppIcon from './WhatsAppIcon'
 
@@ -6,6 +6,31 @@ const GroupCard = ({ group }) => {
   const handleJoinGroup = (e) => {
     e.stopPropagation()
     window.open(group.join_link, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleShare = async (e) => {
+    e.stopPropagation()
+    const shareUrl = `${window.location.origin}/group/${group.id}`
+    const shareText = `${group.description}\n\n${shareUrl}`
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: group.name,
+          text: shareText,
+        })
+      } catch (error) {
+        console.error('Error sharing:', error)
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareText)
+        // You could add a toast notification here
+      } catch (error) {
+        console.error('Error copying to clipboard:', error)
+      }
+    }
   }
   const getCategoryColor = (category) => {
     const colors = {
@@ -79,24 +104,34 @@ const GroupCard = ({ group }) => {
         {/* Description */}
         <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
           {group.description}
-        </p>
-
-        {/* Action Buttons */}
-        <div className="flex space-x-3">
-          <Link
-            to={`/group/${group.id}`}
-            className="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-xl text-sm font-medium hover:bg-gray-200 transition-all duration-200 flex items-center justify-center space-x-2 hover:scale-[1.02]"
-          >
-            <Eye size={16} />
-            <span>View Details</span>
-          </Link>
+        </p>        {/* Action Buttons */}
+        <div className="space-y-3">
+          {/* Share Button */}
           <button
-            onClick={handleJoinGroup}
-            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-xl text-sm font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center justify-center space-x-2 hover:scale-[1.02] shadow-lg group-hover:shadow-xl"
+            onClick={handleShare}
+            className="w-full bg-blue-100 text-blue-700 px-4 py-3 rounded-xl text-sm font-medium hover:bg-blue-200 transition-all duration-200 flex items-center justify-center space-x-2 hover:scale-[1.02]"
           >
-            <WhatsAppIcon className="w-4 h-4" />
-            <span>Join Now</span>
+            <Share2 size={16} />
+            <span>Share Group</span>
           </button>
+          
+          {/* View and Join Buttons */}
+          <div className="flex space-x-3">
+            <Link
+              to={`/group/${group.id}`}
+              className="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-xl text-sm font-medium hover:bg-gray-200 transition-all duration-200 flex items-center justify-center space-x-2 hover:scale-[1.02]"
+            >
+              <Eye size={16} />
+              <span>View</span>
+            </Link>
+            <button
+              onClick={handleJoinGroup}
+              className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-xl text-sm font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center justify-center space-x-2 hover:scale-[1.02] shadow-lg group-hover:shadow-xl"
+            >
+              <WhatsAppIcon className="w-4 h-4" />
+              <span>Join</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -63,16 +63,15 @@ const GroupDetail = () => {
   const handleJoinGroup = () => {
     window.open(group.join_link, '_blank', 'noopener,noreferrer')
   }
-
   const handleShare = async () => {
     const shareUrl = window.location.href
+    const shareText = `${group.description}\n\n${shareUrl}`
     
     if (navigator.share) {
       try {
         await navigator.share({
           title: group.name,
-          text: group.description,
-          url: shareUrl,
+          text: shareText,
         })
       } catch (error) {
         logger.error('Error sharing:', error)
@@ -80,7 +79,7 @@ const GroupDetail = () => {
     } else {
       // Fallback: copy to clipboard
       try {
-        await navigator.clipboard.writeText(shareUrl)
+        await navigator.clipboard.writeText(shareText)
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
       } catch (error) {

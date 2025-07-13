@@ -1,15 +1,15 @@
 // App Configuration
 export const APP_CONFIG = {  // App Information
-    name: "Future Minds Community Hub",
+    name: "Group Name Community Hub",
     description: "Educational community connecting students across disciplines - for students, by students",
     version: "1.0.0",
-    logo: "/minds.png",
+    logo: "/image.png",
 
     // SEO & Meta
     keywords: "student community, educational groups, study groups, academic help, peer learning, student networking",
-    author: "Future Minds Student Community",
+    author: "Student Community",
     // URLs
-    baseUrl: import.meta.env.VITE_APP_URL || "https://mind-community.netlify.app",    // Admin Contact Information
+    baseUrl: import.meta.env.VITE_APP_URL || "https://your-community-hub.com",    // Admin Contact Information
     admins: [
         {
             id: 1,
@@ -35,27 +35,18 @@ export const APP_CONFIG = {  // App Information
             ...admin,
             whatsappDeepLink: `https://wa.me/${admin.whatsappNumber.replace('+', '')}?text=Hi%20${admin.name.split(' ')[0]}`
         })),
-
-    // App Theme Colors
-    colors: {
-        primary: "#25D366", // WhatsApp green
-        secondary: "#128C7E",
-        accent: "#075E54",
-        background: "#f8fafc",
-        surface: "#ffffff"
-    },
     // Contact & Support
     support: {
-        email: "support@futureminds.com",
-        website: "https://mind-community.netlify.app"
+        email: "support@your-community-hub.com",
+        website: "https://your-community-hub.com"
     }
 };
 
 // Social Media Links
 export const SOCIAL_LINKS = {
     whatsapp: "https://wa.me/1234567890",
-    website: "https://mind-community.netlify.app",
-    email: "mailto:contact@futureminds.com"
+    website: "https://your-community-hub.com",
+    email: "mailto:contact@your-community-hub.com"
 };
 
 // Navigation Items

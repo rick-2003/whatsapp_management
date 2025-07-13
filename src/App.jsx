@@ -45,15 +45,17 @@ function App() {
       <Router>
         <div className="app-container">
           <Header session={session} />
-          <main className="pb-20">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/admin" element={<AdminDashboard session={session} />} />
-              <Route path="/group/:id" element={<GroupDetail />} />
-              <Route path="/admin-contact" element={<AdminContact />} />
-            </Routes>
-          </main>
+          <div className="max-w-md mx-auto">
+            <main className="pb-20">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/admin" element={<AdminDashboard session={session} />} />
+                <Route path="/group/:id" element={<GroupDetail />} />
+                <Route path="/admin-contact" element={<AdminContact />} />
+              </Routes>
+            </main>
+          </div>
         </div>
       </Router>
     </HelmetProvider>

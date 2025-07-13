@@ -1,6 +1,6 @@
 # Supabase Database Setup
 
-This guide will help you set up the Supabase database for the FUTURE MINDS Groups Management System.
+This guide will help you set up the Supabase database for the Student Community Groups Management System.
 
 ## 1. Create Supabase Project
 
@@ -76,7 +76,7 @@ CREATE POLICY "Authenticated users can do everything" ON groups
 ```sql
 -- Insert some sample groups
 INSERT INTO groups (name, description, category, group_type, join_link, member_count, is_verified) VALUES
-('Future Minds CSE Hub', 'A community for Computer Science students and professionals. Share knowledge, discuss algorithms, and collaborate on coding projects.', 'cse', 'group', 'https://chat.whatsapp.com/sample1', 250, true),
+('CSE Study Hub', 'A community for Computer Science students and professionals. Share knowledge, discuss algorithms, and collaborate on coding projects.', 'cse', 'group', 'https://chat.whatsapp.com/sample1', 250, true),
 ('IT Study Group', 'Join Information Technology students for group study sessions, resource sharing, and technical discussions.', 'it', 'group', 'https://chat.whatsapp.com/sample2', 180, true),
 ('ECE Network', 'Connect with Electronics & Communication students and professionals. Discuss circuits, signals, and latest tech trends.', 'ece', 'group', 'https://chat.whatsapp.com/sample3', 320, false),
 ('Mechanical Engineering', 'Tips, advice, and discussions for Mechanical Engineering students. Share projects and career guidance.', 'mechanical', 'group', 'https://chat.whatsapp.com/sample4', 95, false),

@@ -12,6 +12,18 @@ dist
 dist-ssr
 *.local
 
+# Vite
+.vite
+
+# shadcn/ui generated files
+src/components/ui/*
+src/hooks/*
+
+# Supabase
+.env
+.supabase
+.supabase/*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

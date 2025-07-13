@@ -6,4 +6,4 @@
 
 
 # Force HTTPS redirects
-http://mind-community.netlify.app/*    https://mind-community.netlify.app/:splat    301!
+http://your-community-hub.com/*    https://your-community-hub.com/:splat    301!

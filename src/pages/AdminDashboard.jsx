@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Edit, Trash2, Eye, EyeOff, BarChart3, RefreshCw, Search, Filter } from 'lucide-react'
+import { Plus, Edit, Trash2, Eye, EyeOff, BarChart3, RefreshCw, Search, Filter, MessageCircle, Calendar } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 import cachedDB from '../lib/cachedDatabase'
 import { APP_CONFIG } from '../config/app'
-import LoadingSpinner from '../components/LoadingSpinner'
+import { Spinner } from '@/components/ui/spinner'
 import GroupForm from '../components/GroupForm'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Separator } from '@/components/ui/separator'
 
 // Check if running in production
 const isProduction = process.env.NODE_ENV === 'production'
@@ -254,37 +261,38 @@ const AdminDashboard = ({ session }) => {
   }
 
   if (loading) {
-    return <LoadingSpinner />
+    return <Spinner className="mx-auto h-8 w-8" />
   }  return (
-    <>
+    <div className="container mx-auto py-8 px-4">
       <Helmet>
         <title>Admin Dashboard - {APP_CONFIG.name}</title>
         <meta name="description" content="Administrative dashboard for managing community groups" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="min-h-screen bg-gray-50">      {/* Header - One UI Style */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
-        <div className="px-6 py-6">          <div className="text-center mb-6">
-            <h1 className="text-3xl font-light mb-2 tracking-wide">Admin Dashboard</h1>
-            <p className="text-blue-100 text-sm font-light">Manage Community Hub Groups</p>
-            
-            {/* Real-time Status Indicator */}
-            <div className="mt-3 flex items-center justify-center space-x-2 text-xs">
-              <div className={`w-2 h-2 rounded-full ${
-                realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400' : 
-                realtimeStatus === 'CHANNEL_ERROR' ? 'bg-red-400' : 
-                'bg-yellow-400'
-              }`}></div>
-              <span className="text-blue-100 opacity-75">
-                Real-time: {realtimeStatus === 'SUBSCRIBED' ? 'Connected' : 
-                          realtimeStatus === 'CHANNEL_ERROR' ? 'Error' : 'Connecting...'}
-              </span>
-            </div>
-          </div>
-          
-          {/* Action Buttons - Horizontal Layout */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">            <button
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <div className={`w-2 h-2 rounded-full ${
+            realtimeStatus === 'SUBSCRIBED' ? 'bg-green-500' : 
+            realtimeStatus === 'CHANNEL_ERROR' ? 'bg-destructive' : 
+            'bg-yellow-500'
+          }`}></div>
+          <span>Real-time: {realtimeStatus === 'SUBSCRIBED' ? 'Connected' : 
+                    realtimeStatus === 'CHANNEL_ERROR' ? 'Error' : 'Connecting...'}
+          </span>
+        </div>
+      </div>
+
+      {/* Action Buttons and Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <Card className="col-span-1 md:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-lg font-semibold">Actions</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row gap-3">
+            <Button
               onClick={() => {
                 logger.log('🔄 Manual refresh triggered')
                 cachedDB.invalidateGroupsCache()
@@ -292,209 +300,199 @@ const AdminDashboard = ({ session }) => {
                 fetchGroups()
                 fetchStats()
               }}
-              className="flex-1 sm:flex-none bg-white/10 backdrop-blur text-white px-6 py-3 rounded-2xl flex items-center justify-center space-x-2 hover:bg-white/20 transition-all duration-200 font-medium"
+              variant="outline"
+              className="flex-1"
             >
-              <RefreshCw size={18} />
-              <span>Refresh</span>
-            </button>
-            
-            <button
+              <RefreshCw size={18} className="mr-2" />
+              <span>Refresh Data</span>
+            </Button>
+            <Button
               onClick={() => setShowForm(true)}
-              className="flex-1 sm:flex-none bg-green-500 text-white px-6 py-3 rounded-2xl flex items-center justify-center space-x-2 hover:bg-green-600 transition-all duration-200 shadow-lg font-medium"
+              className="flex-1"
             >
-              <Plus size={20} />
-              <span>Add Group</span>
-            </button>
-          </div>
-        </div>
-      </div>      {/* Stats - One UI Style */}
-      <div className="px-4 sm:px-6 py-6">
-        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
-          <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm text-center border border-gray-100">
-            <div className="text-2xl sm:text-3xl font-light text-gray-900 mb-1">{stats.total}</div>
-            <div className="text-xs sm:text-sm text-gray-600 font-medium">Total Groups</div>
-          </div>
-          <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm text-center border border-gray-100">
-            <div className="text-2xl sm:text-3xl font-light text-green-600 mb-1">{stats.active}</div>
-            <div className="text-xs sm:text-sm text-gray-600 font-medium">Active</div>
-          </div>
-          <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm text-center border border-gray-100">
-            <div className="text-2xl sm:text-3xl font-light text-red-600 mb-1">{stats.inactive}</div>
-            <div className="text-xs sm:text-sm text-gray-600 font-medium">Inactive</div>
-          </div>
-        </div>{/* Search and Filter */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6">
-          <div className="flex flex-col gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Search groups..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-              />
+              <Plus size={20} className="mr-2" />
+              <span>Add New Group</span>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-lg font-semibold">Group Stats</CardTitle>
+            <BarChart3 className="h-5 w-5 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="grid grid-cols-3 gap-2 text-center">
+            <div>
+              <div className="text-2xl font-bold">{stats.total}</div>
+              <div className="text-xs text-muted-foreground">Total</div>
             </div>
-            
-            {/* Filters Row */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              {/* Category Filter */}
-              <div className="flex-1">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all bg-white"
-                >
-                  <option value="all">All</option>                  {categories.slice(1).map(category => (
-                    <option key={category} value={category}>
-                      {category === 'common' ? 'Common' : category.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              {/* Status Filter */}
-              <div className="flex-1">
-                <select
-                  value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all bg-white"
-                >
-                  <option value="all">All Status</option>
-                  <option value="active">Active Only</option>
-                  <option value="inactive">Inactive Only</option>
-                </select>
-              </div>
+            <div>
+              <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+              <div className="text-xs text-muted-foreground">Active</div>
             </div>
-          </div>
-        </div>
-        {/* Groups List - Enhanced Design */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100">          <div className="p-4 sm:p-6 border-b border-gray-100">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <h2 className="text-xl font-bold text-gray-900">Groups Management</h2>
-              <div className="text-sm text-gray-500">
-                Showing {filteredGroups.length} of {groups.length} groups
-              </div>
+            <div>
+              <div className="text-2xl font-bold text-destructive">{stats.inactive}</div>
+              <div className="text-xs text-muted-foreground">Inactive</div>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Search and Filter */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Filter Groups</CardTitle>
+          <CardDescription>Search and filter groups by category or status.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="Search groups by name or description..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
           
+          {/* Filters Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Category Filter */}
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>                  {categories.slice(1).map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category === 'common' ? 'Common' : category.toUpperCase()}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {/* Status Filter */}
+            <Select
+              value={selectedStatus}
+              onValueChange={setSelectedStatus}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active Only</SelectItem>
+                <SelectItem value="inactive">Inactive Only</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Groups List */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>All Groups</CardTitle>
+          <CardDescription>
+            Showing {filteredGroups.length} of {groups.length} groups
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           {filteredGroups.length === 0 ? (
-            <div className="p-8 sm:p-12 text-center">
+            <div className="text-center py-8">
               {groups.length === 0 ? (
                 <>
-                  <BarChart3 className="mx-auto mb-6 text-gray-400" size={48} />
-                  <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-3">No groups yet</h3>
-                  <p className="text-gray-500 mb-6 text-sm">Get started by adding your first group</p>
-                  <button
+                  <BarChart3 className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <h3 className="text-xl font-semibold text-foreground mb-2">No groups yet</h3>
+                  <p className="text-muted-foreground text-sm mb-4">Get started by adding your first group</p>
+                  <Button
                     onClick={() => setShowForm(true)}
-                    className="bg-green-500 text-white px-6 py-3 rounded-2xl hover:bg-green-600 transition-colors font-medium"
                   >
+                    <Plus size={16} className="mr-2" />
                     Add First Group
-                  </button>
+                  </Button>
                 </>
               ) : (
-                <>                  <Search className="mx-auto mb-6 text-gray-400" size={48} />
-                  <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-3">No groups found</h3>
-                  <p className="text-gray-500 text-sm">Try adjusting your search or filter criteria</p>
+                <>
+                  <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                  <h3 className="text-xl font-semibold text-foreground mb-2">No groups found</h3>
+                  <p className="text-muted-foreground text-sm">Try adjusting your search or filter criteria</p>
                 </>
               )}
-            </div>          ) : (
+            </div>
+          ) : (
             <>
-              <div className="grid gap-4 p-4 sm:p-6">
-                {filteredGroups.map(group => (
-                  <div key={group.id} className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 hover:shadow-lg transition-all duration-200 shadow-sm">
-                    <div className="flex flex-col h-full">
-                      {/* Group Header */}
-                      <div className="flex items-start space-x-3 mb-4">
-                        {/* Group Avatar */}
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-bold text-lg sm:text-xl">
-                            {group.name.charAt(0).toUpperCase()}
-                          </span>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Verified</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredGroups.map(group => (
+                    <TableRow key={group.id}>
+                      <TableCell className="font-medium">{group.name}</TableCell>
+                      <TableCell>{group.category.toUpperCase()}</TableCell>
+                      <TableCell>{group.group_type === 'channel' ? 'Channel' : 'Group'}</TableCell>
+                      <TableCell>
+                        <Badge variant={group.is_active ? "default" : "destructive"}>
+                          {group.is_active ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {group.is_verified ? <Badge variant="secondary">Yes</Badge> : <Badge variant="outline">No</Badge>}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end space-x-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleToggleActive(group.id, group.is_active)}
+                            title={group.is_active ? 'Deactivate' : 'Activate'}
+                          >
+                            {group.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              setEditingGroup(group)
+                              setShowForm(true)
+                            }}
+                            title="Edit"
+                          >
+                            <Edit size={16} />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => handleDelete(group.id)}
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </Button>
                         </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-gray-900 text-base sm:text-lg leading-tight mb-2">{group.name}</h3>
-                          <div className="flex items-center flex-wrap gap-2">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              group.is_active 
-                                ? 'bg-green-100 text-green-700' 
-                                : 'bg-red-100 text-red-700'
-                            }`}>
-                              {group.is_active ? 'Active' : 'Inactive'}
-                            </span>
-                            {group.is_verified && (
-                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                Verified
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Group Description */}
-                      <p className="text-gray-600 mb-4 leading-relaxed text-sm line-clamp-2">{group.description}</p>
-                      
-                      {/* Group Meta Info - Horizontal Layout Optimized for Mobile */}
-                      <div className="flex items-center justify-between gap-2 mb-6 p-3 bg-gray-50 rounded-xl border">
-                        <div className="flex items-center space-x-1 text-xs text-gray-600">
-                          <span>📚</span>
-                          <span className="font-medium">{group.category === 'common' ? 'Common' : group.category.charAt(0).toUpperCase() + group.category.slice(1)}</span>
-                        </div>
-                        <div className="flex items-center space-x-1 text-xs text-gray-600">
-                          <span>{group.group_type === 'channel' ? '📢' : '👥'}</span>
-                          <span className="font-medium">{group.group_type === 'channel' ? 'Channel' : 'Group'}</span>
-                        </div>
-                        <div className="flex items-center space-x-1 text-xs text-gray-600">
-                          <span>📅</span>
-                          <span className="font-medium">{new Date(group.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                        </div>
-                      </div>
-                      
-                      {/* Action Buttons - Bottom Center with Better Mobile Layout */}
-                      <div className="flex items-center justify-center space-x-4 pt-4 border-t border-gray-100 mt-auto">
-                        <button
-                          onClick={() => handleToggleActive(group.id, group.is_active)}
-                          className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-200 ${
-                            group.is_active 
-                              ? 'text-green-600 hover:bg-green-100 bg-green-50' 
-                              : 'text-red-600 hover:bg-red-100 bg-red-50'
-                          }`}
-                          title={group.is_active ? 'Deactivate' : 'Activate'}
-                        >
-                          {group.is_active ? <Eye size={18} /> : <EyeOff size={18} />}
-                        </button>
-                        
-                        <button
-                          onClick={() => {
-                            setEditingGroup(group)
-                            setShowForm(true)
-                          }}
-                          className="flex items-center justify-center w-12 h-12 text-blue-600 hover:bg-blue-100 bg-blue-50 rounded-xl transition-all duration-200"
-                          title="Edit"
-                        >
-                          <Edit size={18} />
-                        </button>
-                        
-                        <button
-                          onClick={() => handleDelete(group.id)}
-                          className="flex items-center justify-center w-12 h-12 text-red-600 hover:bg-red-100 bg-red-50 rounded-xl transition-all duration-200"
-                          title="Delete"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
               
               {/* Load More Indicator */}
               {loadingMore && (
                 <div className="flex justify-center items-center py-8">
-                  <div className="flex items-center space-x-2 text-gray-500">
-                    <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                  <div className="flex items-center space-x-2 text-muted-foreground">
+                    <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin"></div>
                     <span className="text-sm">Loading more groups...</span>
                   </div>
                 </div>
@@ -503,15 +501,15 @@ const AdminDashboard = ({ session }) => {
               {/* End of Results Indicator */}
               {!hasMore && filteredGroups.length > 0 && (
                 <div className="flex justify-center items-center py-8">
-                  <div className="text-gray-500 text-sm">
+                  <div className="text-muted-foreground text-sm">
                     You've reached the end of the list
                   </div>
                 </div>
               )}
             </>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Group Form Modal */}
       {showForm && (
@@ -524,7 +522,6 @@ const AdminDashboard = ({ session }) => {
         />
       )}
     </div>
-    </>
   )
 }
 

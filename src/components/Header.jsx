@@ -1,117 +1,135 @@
-import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, User, LogOut, Home, Shield, MessageCircle } from 'lucide-react'
+import { Menu, Home, Shield, MessageCircle, LogOut, Users } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { APP_CONFIG } from '../config/app'
+import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet'
+import { Separator } from '@/components/ui/separator'
 
 const Header = ({ session }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     navigate('/')
-    setIsMenuOpen(false)
-  }
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
   }
 
   return (
-    <header className="bg-primary text-white sticky top-0 z-50 shadow-lg">
-      <div className="px-4 py-3">
-        <div className="flex items-center justify-between">          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img 
-              src={APP_CONFIG.logo} 
-              alt={APP_CONFIG.name} 
-              className="w-8 h-8 rounded-full"
-            />
-            <div>
-              <h1 className="text-lg font-bold leading-tight">FUTURE MINDS</h1>
-              <p className="text-xs text-gray-300">Community Hub</p>
-            </div>
-          </Link>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center justify-between px-4">
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2">
+          <img 
+            src={APP_CONFIG.logo} 
+            alt={APP_CONFIG.name} 
+            className="h-6 w-6 rounded-full"
+          />
+          <span className="font-bold text-lg hidden sm:inline-block">{APP_CONFIG.name}</span>
+        </Link>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="p-2 rounded-lg hover:bg-primary/80 transition-colors"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="mt-4 pb-4 border-t border-primary/20">
-            <nav className="space-y-2 mt-4">              <Link
-                to="/"
-                onClick={() => setIsMenuOpen(false)}
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                  location.pathname === '/' 
-                    ? 'bg-whatsapp text-white' 
-                    : 'hover:bg-primary/80'
-                }`}
-              >
-                <Home size={20} />
-                <span>Home</span>
+        {/* Desktop Navigation (Always Hidden) */}
+        <nav className="hidden items-center space-x-4">
+          <Button variant="ghost" asChild>
+            <Link to="/">
+              <Home className="mr-2 h-4 w-4" />
+              Home
+            </Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link to="/admin-contact">
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Admin Contact
+            </Link>
+          </Button>
+          {session ? (
+            <>
+              <Button variant="ghost" asChild>
+                <Link to="/admin">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Admin Dashboard
+                </Link>
+              </Button>
+              <Button variant="ghost" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </>
+          ) : (
+            <Button variant="ghost" asChild>
+              <Link to="/login">
+                <Users className="mr-2 h-4 w-4" />
+                Login
               </Link>
+            </Button>
+          )}
+        </nav>
 
-              <Link
-                to="/admin-contact"
-                onClick={() => setIsMenuOpen(false)}
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                  location.pathname === '/admin-contact' 
-                    ? 'bg-whatsapp text-white' 
-                    : 'hover:bg-primary/80'
-                }`}
-              >
-                <MessageCircle size={20} />
-                <span>Admin Contact</span>
-              </Link>
-
+        {/* Mobile Menu (Always Visible) */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Toggle Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[250px] sm:w-[300px]">
+            <Link to="/" className="flex items-center space-x-2 mb-6" onClick={() => document.getElementById('close-sheet')?.click()}>
+              <img 
+                src={APP_CONFIG.logo} 
+                alt={APP_CONFIG.name} 
+                className="h-8 w-8 rounded-full"
+              />
+              <span className="font-bold text-xl">{APP_CONFIG.name}</span>
+            </Link>
+            <Separator className="mb-4" />
+            <nav className="flex flex-col space-y-2">
+              <SheetClose asChild>
+                <Button variant="ghost" className="justify-start" asChild>
+                  <Link to="/">
+                    <Home className="mr-2 h-4 w-4" />
+                    Home
+                  </Link>
+                </Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button variant="ghost" className="justify-start" asChild>
+                  <Link to="/admin-contact">
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    Admin Contact
+                  </Link>
+                </Button>
+              </SheetClose>
               {session ? (
                 <>
-                  <Link
-                    to="/admin"
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                      location.pathname === '/admin' 
-                        ? 'bg-whatsapp text-white' 
-                        : 'hover:bg-primary/80'
-                    }`}
-                  >
-                    <Shield size={20} />
-                    <span>Admin Dashboard</span>
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors w-full text-left"
-                  >
-                    <LogOut size={20} />
-                    <span>Logout</span>
-                  </button>
+                  <SheetClose asChild>
+                    <Button variant="ghost" className="justify-start" asChild>
+                      <Link to="/admin">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </Button>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Button variant="ghost" className="justify-start text-destructive hover:bg-destructive/10" onClick={handleLogout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </Button>
+                  </SheetClose>
                 </>
               ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                    location.pathname === '/login' 
-                      ? 'bg-whatsapp text-white' 
-                      : 'hover:bg-primary/80'
-                  }`}
-                >
-                  <User size={20} />
-                  <span>Admin Login</span>
-                </Link>
+                <SheetClose asChild>
+                  <Button variant="ghost" className="justify-start" asChild>
+                    <Link to="/login">
+                      <Users className="mr-2 h-4 w-4" />
+                      Login
+                    </Link>
+                  </Button>
+                </SheetClose>
               )}
             </nav>
-          </div>
-        )}
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   )

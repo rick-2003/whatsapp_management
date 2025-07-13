@@ -3,7 +3,7 @@
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
 
 ## Project Overview
-This is "FUTURE MINDS: Groups/Channel Management System" - a WhatsApp group management system built with React, Vite, Tailwind CSS, Lucide React icons, and Supabase.
+This is "WhatsApp Groups/Channel Management System" - a WhatsApp group management system built with React, Vite, Tailwind CSS, Lucide React icons, and Supabase.
 
 ## Key Requirements
 - Mobile-first UI design (native mobile app feel)

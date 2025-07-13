@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react'
-import { Search, Users, ExternalLink, MessageCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Search, Users, ExternalLink, MessageCircle, Calendar } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 import cachedDB from '../lib/cachedDatabase'
 import { APP_CONFIG } from '../config/app'
 import GroupCard from '../components/GroupCard'
-import LoadingSpinner from '../components/LoadingSpinner'
+import { Spinner } from '@/components/ui/spinner'
 import WhatsAppIcon from '../components/WhatsAppIcon'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 // Check if running in production
 const isProduction = process.env.NODE_ENV === 'production'
@@ -21,7 +28,8 @@ const logger = {
   error: (...args) => {
     if (!isProduction) {
       console.error(...args)
-    }  }
+    }
+  }
 }
 
 const Home = () => {
@@ -29,7 +37,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('common')
+  const [selectedCategory, setSelectedCategory] = useState('all')
   const [randomAdmin, setRandomAdmin] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
@@ -128,7 +136,7 @@ const Home = () => {
   const categories = ['all', 'common', 'cse', 'it', 'ece', 'eee', 'mechanical', 'civil', 'other']
 
   if (loading) {
-    return <LoadingSpinner />
+    return <Spinner className="mx-auto h-8 w-8" />
   }
   return (
     <>
@@ -141,144 +149,139 @@ const Home = () => {
         <meta property="og:image" content={`${APP_CONFIG.baseUrl}${APP_CONFIG.logo}`} />
       </Helmet>
 
-      <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - One UI Style */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">        <div className="px-6 py-8">
-          <div className="text-center mb-6">
-            {/* App Logo */}
-            <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-lg p-2">
-              <img 
-                src={APP_CONFIG.logo} 
-                alt={APP_CONFIG.name} 
-                className="w-full h-full rounded-full object-cover"
-              />
-            </div>            <h1 className="text-3xl font-light mb-2 tracking-wide">FUTURE MINDS</h1>
-            <p className="text-blue-100 text-sm font-light mb-6">Student Community Hub</p>
-            
-            {/* Stats Cards - One UI Style */}
-            <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-3">
-                <div className="text-2xl font-light">{groups.length}</div>
-                <div className="text-xs text-blue-100 font-medium">Study Groups</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-3">
-                <div className="text-2xl font-light">{groups.filter(g => g.is_active).length}</div>
-                <div className="text-xs text-blue-100 font-medium">Active</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-3">
-                <div className="text-2xl font-light">{new Set(groups.map(g => g.category)).size}</div>
-                <div className="text-xs text-blue-100 font-medium">Subjects</div>
+      <div className="container mx-auto py-8 px-4">
+        {/* Hero Section */}
+        <Card className="mb-8 text-center">
+          <CardHeader>
+            <Avatar className="mx-auto h-24 w-24 mb-4">
+              <AvatarImage src={APP_CONFIG.logo} alt={APP_CONFIG.name} />
+              <AvatarFallback>{APP_CONFIG.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <CardTitle className="text-3xl font-bold">{APP_CONFIG.name}</CardTitle>
+            <CardDescription className="text-muted-foreground">Student Community Hub</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-3 gap-4">
+            <div className="p-3">
+              <div className="text-2xl font-bold">{groups.length}</div>
+              <div className="text-sm text-muted-foreground">Study Groups</div>
+            </div>
+            <div className="p-3">
+              <div className="text-2xl font-bold">{groups.filter(g => g.is_active).length}</div>
+              <div className="text-sm text-muted-foreground">Active</div>
+            </div>
+            <div className="p-3">
+              <div className="text-2xl font-bold">{new Set(groups.map(g => g.category)).size}</div>
+              <div className="text-sm text-muted-foreground">Subjects</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Admin Contact Panel */}
+        <Card className="mb-8">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-lg font-semibold">Contact Admin</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center space-x-0 space-y-4">
+            <div className="flex items-center space-x-4 w-full">
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={APP_CONFIG.logo} alt={randomAdmin?.name} />
+                <AvatarFallback>{randomAdmin?.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                {randomAdmin && (
+                  <p className="text-sm font-medium leading-none">{randomAdmin.name}</p>
+                )}
+                <p className="text-sm text-muted-foreground">{randomAdmin?.department}</p>
               </div>
             </div>
-          </div>
-        </div>
-      </div>      {/* Admin Contact Panel */}
-      <div className="px-6 py-4 bg-white border-b border-gray-100">
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border border-green-100">
-          <div className="flex items-center space-x-3">
-            <img 
-              src={APP_CONFIG.logo} 
-              alt={APP_CONFIG.name} 
-              className="w-10 h-10 rounded-full object-cover"
+            <div className="flex w-full space-x-2">
+              <Button variant="outline" className="w-1/2" asChild>
+                <Link to="/admin-contact">
+                  <Users className="mr-2 h-4 w-4" />
+                  All Admins
+                </Link>
+              </Button>
+              <Button
+                onClick={() => randomAdmin && handleWhatsAppContact(randomAdmin)}
+                className="w-1/2 bg-whatsapp hover:bg-whatsapp_dark"
+              >
+                <WhatsAppIcon className="mr-2 h-4 w-4" />
+                Chat
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Search and Filter Section */}
+        <div className="mb-8">
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="Search engineering groups..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
             />
-            <div className="text-left">
-              {randomAdmin && (
-                <>
-                  <p className="font-semibold text-gray-900 text-sm">{randomAdmin.name}</p>
-                  <p className="text-xs text-gray-600">{randomAdmin.department}</p>
-                </>
+          </div>
+
+          <ScrollArea className="w-full whitespace-nowrap rounded-md border">
+            <div className="flex w-max space-x-2 p-4">
+              {categories.map(category => (
+                <Button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  className="rounded-full"
+                >
+                  {category === 'all' ? 'All' : category.toUpperCase()}
+                </Button>
+              ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </div>
+
+        {/* Groups Section */}
+        <div>
+          {filteredGroups.length === 0 ? (
+            <div className="text-center py-16">
+              <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">No groups found</h3>
+              <p className="text-muted-foreground text-sm">
+                {searchTerm || selectedCategory !== 'all' 
+                  ? 'Try adjusting your search or filter criteria' 
+                  : 'No groups available at the moment'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredGroups.map(group => (
+                <GroupCard key={group.id} group={group} />
+              ))}
+              
+              {/* Load More Indicator */}
+              {loadingMore && (
+                <div className="col-span-full flex justify-center items-center py-8">
+                  <div className="flex items-center space-x-2 text-muted-foreground">
+                    <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin"></div>
+                    <span className="text-sm">Loading more groups...</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* End of Results Indicator */}
+              {!hasMore && filteredGroups.length > 0 && (
+                <div className="col-span-full flex justify-center items-center py-8">
+                  <div className="text-muted-foreground text-sm">
+                    You've reached the end of the list
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-          <div className="flex space-x-2">            <button
-              onClick={() => randomAdmin && window.open(randomAdmin.whatsappDeepLink, '_blank')}
-              className="bg-green-500 text-white px-3 py-2 rounded-full text-sm font-medium hover:bg-green-600 transition-colors flex items-center space-x-1"
-            >
-              <WhatsAppIcon className="w-4 h-4" />
-              <span>Chat</span>
-            </button>
-            <button
-              onClick={() => window.location.href = '/admin-contact'}
-              className="bg-blue-500 text-white px-3 py-2 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors flex items-center space-x-1"
-            >
-              <Users size={14} />
-              <span>All</span>
-            </button>
-          </div>
+          )}
         </div>
       </div>
-
-      {/* Search and Filter Section - One UI Style */}
-      <div className="px-6 py-4 bg-white">
-        {/* Search Bar */}
-        <div className="relative mb-4">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Search engineering groups..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-4 bg-gray-50 border-0 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-          />
-        </div>
-
-        {/* Category Filter - One UI Style */}
-        <div className="flex overflow-x-auto space-x-2 pb-2">
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                selectedCategory === category
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {category === 'all' ? 'All' : category === 'common' ? 'Common' : category.toUpperCase()}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Groups Section */}
-      <div className="px-6 pb-8">
-        {filteredGroups.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-              <Users className="text-gray-400" size={32} />
-            </div>
-            <h3 className="text-xl font-light text-gray-900 mb-2">No groups found</h3>            <p className="text-gray-500 text-sm">
-              {searchTerm || selectedCategory !== 'common' 
-                ? 'Try adjusting your search or filter criteria' 
-                : 'No groups available at the moment'}
-            </p>
-          </div>        ) : (
-          <div className="space-y-4">
-            {filteredGroups.map(group => (
-              <GroupCard key={group.id} group={group} />
-            ))}
-            
-            {/* Load More Indicator */}
-            {loadingMore && (
-              <div className="flex justify-center items-center py-8">
-                <div className="flex items-center space-x-2 text-gray-500">
-                  <div className="w-4 h-4 border-2 border-gray-300 border-t-green-500 rounded-full animate-spin"></div>
-                  <span className="text-sm">Loading more groups...</span>
-                </div>
-              </div>
-            )}
-            
-            {/* End of Results Indicator */}
-            {!hasMore && filteredGroups.length > 0 && (
-              <div className="flex justify-center items-center py-8">
-                <div className="text-gray-500 text-sm">
-                  You've reached the end of the list
-                </div>
-              </div>
-            )}
-          </div>
-        )}</div>
-    </div>
     </>
   )
 }

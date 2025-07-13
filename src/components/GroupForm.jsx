@@ -1,6 +1,14 @@
 import { useState } from 'react'
 import { X, Save, Link as LinkIcon, Image, Users, MessageCircle } from 'lucide-react'
 import cachedDB from '../lib/cachedDatabase'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 
 const GroupForm = ({ group, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -60,186 +68,165 @@ const GroupForm = ({ group, onSuccess, onCancel }) => {
       [name]: type === 'checkbox' ? checked : type === 'number' ? parseInt(value) || 0 : value
     }))
   }
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {group ? 'Edit Group' : 'Add New Group'}
-          </h2>
-          <button
-            onClick={onCancel}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-          >
-            <X size={20} />
-          </button>
-        </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+  const handleSelectChange = (name, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  return (
+    <Dialog open={true} onOpenChange={onCancel}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{group ? 'Edit Group' : 'Add New Group'}</DialogTitle>
+          <DialogDescription>
+            {group ? 'Make changes to this group here. Click save when you\'re done.' : 'Fill in the details to add a new group to the community hub.'}
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+            <div className="bg-destructive/10 text-destructive border border-destructive rounded-md px-4 py-2 text-sm">
               {error}
             </div>
           )}
 
-          {/* Group Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Group Name *
-            </label>
-            <input
-              type="text"
+          <div className="grid gap-2">
+            <Label htmlFor="name">Group Name *</Label>
+            <Input
+              id="name"
               name="name"
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter group name"
             />
           </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description *
-            </label>
-            <textarea
+          <div className="grid gap-2">
+            <Label htmlFor="description">Description *</Label>
+            <Textarea
+              id="description"
               name="description"
-              value={formData.description}              onChange={handleChange}
+              value={formData.description}
+              onChange={handleChange}
               required
               rows={3}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Describe what this group is about"
             />
           </div>
 
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Department *
-            </label>
-            <select
+          <div className="grid gap-2">
+            <Label htmlFor="category">Department *</Label>
+            <Select
               name="category"
               value={formData.category}
-              onChange={handleChange}
+              onValueChange={(value) => handleSelectChange('category', value)}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              {categories.map(cat => (
-                <option key={cat.value} value={cat.value}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(cat => (
+                  <SelectItem key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Group Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Type *
-            </label>
-            <select
+          <div className="grid gap-2">
+            <Label htmlFor="group_type">Type *</Label>
+            <Select
               name="group_type"
               value={formData.group_type}
-              onChange={handleChange}              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              onValueChange={(value) => handleSelectChange('group_type', value)}
+              required
             >
-              <option value="group">Group</option>
-              <option value="channel">Channel</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select group type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="group">Group</SelectItem>
+                <SelectItem value="channel">Channel</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Join Link */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              WhatsApp Join Link *
-            </label>
+          <div className="grid gap-2">
+            <Label htmlFor="join_link">WhatsApp Join Link *</Label>
             <div className="relative">
-              <LinkIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
+              <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                id="join_link"
                 type="url"
                 name="join_link"
                 value={formData.join_link}
                 onChange={handleChange}
                 required
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10"
                 placeholder="https://chat.whatsapp.com/..."
               />
             </div>
           </div>
 
-          {/* Image URL */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Group Image URL (Optional)
-            </label>
+          <div className="grid gap-2">
+            <Label htmlFor="image_url">Group Image URL (Optional)</Label>
             <div className="relative">
-              <Image className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
+              <Image className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                id="image_url"
                 type="url"
                 name="image_url"
                 value={formData.image_url}
                 onChange={handleChange}
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10"
                 placeholder="https://example.com/image.jpg"
               />
             </div>
           </div>
 
-          {/* Checkboxes */}
-          <div className="space-y-4">
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                name="is_verified"
-                checked={formData.is_verified}
-                onChange={handleChange}
-                className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm font-medium text-gray-700">Verified Group</span>
-            </label>
-
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                name="is_active"
-                checked={formData.is_active}
-                onChange={handleChange}
-                className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm font-medium text-gray-700">Active (Visible to users)</span>
-            </label>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="is_verified"
+              name="is_verified"
+              checked={formData.is_verified}
+              onCheckedChange={(checked) => handleChange({ target: { name: 'is_verified', type: 'checkbox', checked } })}
+            />
+            <Label htmlFor="is_verified">Verified Group</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="is_active"
+              name="is_active"
+              checked={formData.is_active}
+              onCheckedChange={(checked) => handleChange({ target: { name: 'is_active', type: 'checkbox', checked } })}
+            />
+            <Label htmlFor="is_active">Active Group</Label>
           </div>
 
-          {/* Submit Button */}
-          <div className="flex space-x-3 pt-6">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
-            >
+          <DialogDescription className="text-right text-sm text-muted-foreground">
+            Fields marked with * are required.
+          </DialogDescription>
+
+          <Separator />
+
+          <div className="flex justify-end space-x-2">
+            <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
+              <X size={16} className="mr-2" />
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-green-500 text-white px-4 py-3 rounded-xl hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 font-medium"
-            >
-              {loading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              ) : (
-                <>
-                  <Save size={16} />
-                  <span>{group ? 'Update' : 'Create'}</span>
-                </>
-              )}
-            </button>
+            </Button>
+            <Button type="submit" disabled={loading}>
+              <Save size={16} className="mr-2" />
+              {loading ? 'Saving...' : group ? 'Save Changes' : 'Add Group'}
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

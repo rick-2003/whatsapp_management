@@ -1,114 +1,44 @@
-# FUTURE MINDS: Community Hub
+# FUTURE MINDS: Groups/Channel Management System
 
-A mobile-first community group management system built with React, Vite, Tailwind CSS, and Supabase. This application allows users to browse and join community groups, with an admin panel for managing group listings and dedicated admin contact functionality.
+A mobile-first WhatsApp group management system built with React, Vite, Tailwind CSS, shadcn/ui, Lucide React icons, and Supabase. Users can browse and join WhatsApp groups, with a modern admin dashboard for managing listings and admin contact.
 
 ## 🚀 Features
 
 ### Public Features
 - **Mobile-First Design**: Native mobile app-like experience
-- **Community Discovery**: Browse available community groups and channels
-- **Smart Search**: Search groups by name or description
-- **Category Filtering**: Filter groups by categories (Education, Technology, Business, etc.)
-- **Group Details**: View detailed information about each group
-- **Direct Join**: One-click join functionality with WhatsApp links
-- **Share Groups**: Share group links with others
-- **Admin Contact**: Dedicated admin contact page with bio and WhatsApp integration
+- **WhatsApp Group Directory**: Browse and join WhatsApp groups via direct links
+- **Smart Search & Filtering**: Search and filter groups by name, category, or description
+- **Group Details**: View group info, member count, and join status
+- **Share Groups**: Share group links easily
+- **Admin Contact**: Dedicated admin contact page with WhatsApp integration
 - **SEO Optimized**: React Helmet for better search engine visibility
 
 ### Admin Features
-- **Secure Authentication**: Admin login with Supabase Auth
+- **Authentication**: Secure admin login via Supabase Auth
 - **Group Management**: Add, edit, delete, and toggle group visibility
-- **Dashboard Analytics**: View statistics about groups and categories
-- **Admin Profile**: Centralized admin contact information
-- **Media Support**: Add group images and logos
-- **Member Count Tracking**: Keep track of member counts
+- **Dashboard Analytics**: View group and category stats
+- **Admin Profile**: Centralized admin contact info
+- **Media Support**: Add group images/logos
+- **Member Count Tracking**: Track group member counts
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 19 with Vite
-- **Styling**: Tailwind CSS
+- **Frontend**: React 19 + Vite
+- **Styling**: Tailwind CSS + shadcn/ui
 - **Icons**: Lucide React
-- **Backend**: Supabase (Database + Authentication)
+- **Backend**: Supabase (Database + Auth)
 - **Routing**: React Router DOM
 - **SEO**: React Helmet Async
 - **Configuration**: Centralized app config
-- **Deployment**: Ready for Vercel, Netlify, or similar platforms
-
-## 🏗️ Database Schema
-
-The application uses the following Supabase table structure:
-
-### `groups` table
-```sql
-CREATE TABLE groups (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  description TEXT NOT NULL,
-  category VARCHAR(50) NOT NULL,
-  group_type VARCHAR(20) DEFAULT 'group',
-  join_link TEXT NOT NULL,
-  image_url TEXT,
-  member_count INTEGER DEFAULT 0,
-  is_verified BOOLEAN DEFAULT false,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 16+ and npm
-- Supabase account and project
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd whatsapp-management
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` and add your Supabase credentials:
-   ```
-   VITE_SUPABASE_URL=your-supabase-project-url
-   VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-   ```
-
-4. **Set up Supabase database**
-   - Create the `groups` table using the schema above
-   - Set up Row Level Security (RLS) policies
-   - Create admin user accounts
-
-5. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-### Supabase Setup
-
-1. **Create the groups table** in your Supabase project
-2. **Set up RLS policies**:
-   - Allow public read access to active groups
-   - Allow authenticated users (admins) full access
-3. **Create admin accounts** through Supabase Auth
+- **Deployment**: Vercel, Netlify, etc.
 
 ## 🎨 Design Features
 
-- **Mobile-First**: Optimized for mobile devices with responsive design
-- **Native App Feel**: Smooth animations and mobile-optimized interactions
-- **WhatsApp Theme**: Color scheme inspired by WhatsApp branding
-- **Clean UI**: Modern, minimalist design with focus on usability
+- **Mobile-First**: Optimized for mobile devices
+- **shadcn/ui Components**: All UI built with shadcn/ui for a clean, modern look
+- **Minimalist & Slick**: Modern, minimalist design with focus on usability
+- **Tailwind CSS**: Utility-first styling, responsive and semantic
+- **Lucide Icons**: Crisp, modern iconography
 - **Accessibility**: Semantic HTML and keyboard navigation support
 
 ## 📱 Mobile Optimization
@@ -154,12 +84,15 @@ This project is licensed under the MIT License.
 
 ## 🆘 Support
 
-For support or questions, please create an issue in the repository or contact the admin team.+ Vite
+For support or questions, please create an issue in the repository or contact the admin team.
+
+---
+
+# Original Vite/React Template Info
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
-
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 

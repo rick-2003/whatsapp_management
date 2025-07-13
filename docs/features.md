@@ -1,4 +1,4 @@
-# FUTURE MINDS: Groups Management System
+# Student Community: Groups Management System
 
 ## Features Overview
 

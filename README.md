@@ -1,4 +1,4 @@
-# FUTURE MINDS: Groups/Channel Management System
+# Groups/Channel Management System
 
 A mobile-first WhatsApp group management system built with React, Vite, Tailwind CSS, shadcn/ui, Lucide React icons, and Supabase. Users can browse and join WhatsApp groups, with a modern admin dashboard for managing listings and admin contact.
 

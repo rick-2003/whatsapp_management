@@ -43,6 +43,10 @@ const Home = () => {
   const [hasMore, setHasMore] = useState(true)
   const ITEMS_PER_PAGE = 10
 
+  const handleWhatsAppContact = (admin) => {
+    window.open(admin.whatsappDeepLink, '_blank')
+  }
+
   // Randomly select an admin on page load
   useEffect(() => {
     const admins = APP_CONFIG.admins

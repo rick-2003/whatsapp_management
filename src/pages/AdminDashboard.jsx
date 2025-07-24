@@ -286,12 +286,12 @@ const AdminDashboard = ({ session }) => {
       </div>
 
       {/* Action Buttons and Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card className="col-span-1 md:col-span-2">
+      <div className="grid grid-cols-1 gap-4 mb-8">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-semibold">Actions</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col sm:flex-row gap-3">
+          <CardContent className="flex flex-col gap-3">
             <Button
               onClick={() => {
                 logger.log('🔄 Manual refresh triggered')
@@ -358,7 +358,7 @@ const AdminDashboard = ({ session }) => {
           </div>
           
           {/* Filters Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {/* Category Filter */}
             <Select
               value={selectedCategory}

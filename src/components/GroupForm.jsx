@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useId } from 'react'
 import { X, Save, Link as LinkIcon, Image, Users, MessageCircle } from 'lucide-react'
 import cachedDB from '../lib/cachedDatabase'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
@@ -11,6 +11,8 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 
 const GroupForm = ({ group, onSuccess, onCancel }) => {
+  const dialogTitleId = useId()
+  
   const [formData, setFormData] = useState({
     name: group?.name || '',
     description: group?.description || '',
@@ -78,9 +80,9 @@ const GroupForm = ({ group, onSuccess, onCancel }) => {
 
   return (
     <Dialog open={true} onOpenChange={onCancel}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" aria-labelledby={dialogTitleId}>
         <DialogHeader>
-          <DialogTitle>{group ? 'Edit Group' : 'Add New Group'}</DialogTitle>
+          <DialogTitle id={dialogTitleId}>{group ? 'Edit Group' : 'Add New Group'}</DialogTitle>
           <DialogDescription>
             {group ? 'Make changes to this group here. Click save when you\'re done.' : 'Fill in the details to add a new group to the community hub.'}
           </DialogDescription>

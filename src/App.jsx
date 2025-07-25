@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { HelmetProvider } from 'react-helmet-async'
+import { ThemeProvider } from './components/theme-provider'
 import { supabase } from './lib/supabase'
 import Header from './components/Header'
 import Home from './pages/Home'
@@ -42,22 +43,24 @@ function App() {
   }
   return (
     <HelmetProvider>
-      <Router>
-        <div className="app-container">
-          <Header session={session} />
-          <div className="max-w-md mx-auto">
-            <main className="pb-20">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/admin" element={<AdminDashboard session={session} />} />
-                <Route path="/group/:id" element={<GroupDetail />} />
-                <Route path="/admin-contact" element={<AdminContact />} />
-              </Routes>
-            </main>
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <Router>
+          <div className="app-container">
+            <Header session={session} />
+            <div className="max-w-md mx-auto">
+              <main className="pb-20">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/admin" element={<AdminDashboard session={session} />} />
+                  <Route path="/group/:id" element={<GroupDetail />} />
+                  <Route path="/admin-contact" element={<AdminContact />} />
+                </Routes>
+              </main>
+            </div>
           </div>
-        </div>
-      </Router>
+        </Router>
+      </ThemeProvider>
     </HelmetProvider>
   )
 }

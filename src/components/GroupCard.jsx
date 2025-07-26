@@ -38,7 +38,7 @@ const GroupCard = ({ group }) => {
   }
 
   return (
-    <Card className="w-full rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-border">
+    <Card className="w-full rounded-lg shadow-sm hover:shadow-md transition-all duration-200 bg-card border-border">
       <CardHeader className="p-4 pb-2">
         <div className="flex items-center space-x-3 mb-2">
           {group.image_url ? (

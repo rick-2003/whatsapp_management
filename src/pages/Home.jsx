@@ -155,7 +155,7 @@ const Home = () => {
 
       <div className="container mx-auto py-8 px-4">
         {/* Hero Section */}
-        <Card className="mb-8 text-center">
+        <Card className="mb-8 text-center bg-card border-border">
           <CardHeader>
             <Avatar className="mx-auto h-24 w-24 mb-4">
               <AvatarImage src={APP_CONFIG.logo} alt={APP_CONFIG.name} />
@@ -181,7 +181,7 @@ const Home = () => {
         </Card>
 
         {/* Admin Contact Panel */}
-        <Card className="mb-8">
+        <Card className="mb-8 bg-card border-border">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-semibold">Contact Admin</CardTitle>
           </CardHeader>

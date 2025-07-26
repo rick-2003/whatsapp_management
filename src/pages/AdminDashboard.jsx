@@ -287,7 +287,7 @@ const AdminDashboard = ({ session }) => {
 
       {/* Action Buttons and Stats */}
       <div className="grid grid-cols-1 gap-4 mb-8">
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-semibold">Actions</CardTitle>
           </CardHeader>
@@ -316,7 +316,7 @@ const AdminDashboard = ({ session }) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-semibold">Group Stats</CardTitle>
             <BarChart3 className="h-5 w-5 text-muted-foreground" />
@@ -339,7 +339,7 @@ const AdminDashboard = ({ session }) => {
       </div>
 
       {/* Search and Filter */}
-      <Card className="mb-8">
+      <Card className="mb-8 bg-card border-border">
         <CardHeader>
           <CardTitle>Filter Groups</CardTitle>
           <CardDescription>Search and filter groups by category or status.</CardDescription>
@@ -395,7 +395,7 @@ const AdminDashboard = ({ session }) => {
       </Card>
 
       {/* Groups List */}
-      <Card>
+      <Card className="bg-card border-border">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>All Groups</CardTitle>
           <CardDescription>

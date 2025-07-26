@@ -358,7 +358,7 @@ const AdminDashboard = ({ session }) => {
           </div>
           
           {/* Filters Row */}
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-3">
             {/* Category Filter */}
             <Select
               value={selectedCategory}

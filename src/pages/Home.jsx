@@ -229,21 +229,19 @@ const Home = () => {
             />
           </div>
 
-          <ScrollArea className="w-full whitespace-nowrap rounded-md border">
-            <div className="flex w-max space-x-2 p-4">
-              {categories.map(category => (
-                <Button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  className="rounded-full"
-                >
-                  {category === 'all' ? 'All' : category.toUpperCase()}
-                </Button>
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          <div className="grid grid-cols-2 gap-2 p-4 rounded-md border bg-card">
+            {categories.map(category => (
+              <Button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                variant={selectedCategory === category ? "default" : "outline"}
+                className="rounded-full text-sm"
+                size="sm"
+              >
+                {category === 'all' ? 'All' : category.toUpperCase()}
+              </Button>
+            ))}
+          </div>
         </div>
 
         {/* Groups Section */}
